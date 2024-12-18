@@ -5,11 +5,8 @@
     android:layout_height="match_parent"
     tools:context=".BiometricCaptureFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:gravity="center"
+    <FrameLayout
+        android:id="@+id/biometric_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Capture" />
-
+        android:layout_height="match_parent"/>
 </FrameLayout>

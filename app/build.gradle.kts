@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.biometricsdkexample"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.biometricsdkexample"
@@ -36,6 +36,9 @@ android {
 }
 
 dependencies {
+    implementation ("com.google.mlkit:face-detection:16.1.7")
+    implementation ("androidx.navigation:navigation-fragment-ktx:2.8.0")
+    implementation ("androidx.navigation:navigation-ui-ktx:2.8.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

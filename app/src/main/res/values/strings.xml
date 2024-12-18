@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Biometric SDK Example</string>
+    <string name="btn_start_biometric_session_text">Start Biometric Session</string>
 </resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.biometricsdkexample.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_biometricCaptureFragment"
+            app:destination="@id/biometricCaptureFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/biometricCaptureFragment"
+        android:name="com.example.biometricsdkexample.BiometricCaptureFragment"
+        android:label="fragment_biometric_capture"
+        tools:layout="@layout/fragment_biometric_capture" >
+        <action
+            android:id="@+id/action_biometricCaptureFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_biometricCaptureFragment_to_framesResultFragments"
+            app:destination="@id/framesResultFragments" />
+    </fragment>
+    <fragment
+        android:id="@+id/framesResultFragments"
+        android:name="com.example.biometricsdkexample.FramesResultFragments"
+        android:label="fragment_frames_result_fragments"
+        tools:layout="@layout/fragment_frames_result_fragments" >
+        <action
+            android:id="@+id/action_framesResultFragments_to_biometricCaptureFragment"
+            app:destination="@id/biometricCaptureFragment" />
+    </fragment>
+</navigation>

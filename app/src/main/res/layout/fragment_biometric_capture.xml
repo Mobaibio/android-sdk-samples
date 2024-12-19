@@ -9,4 +9,94 @@
         android:id="@+id/biometric_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:paddingVertical="30dp"
+            android:paddingHorizontal="20dp"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/transparent_background_face_status_container"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.33"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.25"
+                        android:text="Distance:"
+                        android:textSize="18sp"
+                        android:gravity="center_vertical"
+                        android:paddingStart="10dp"
+                        android:textColor="#FFFFFF"/>
+                    <LinearLayout
+                        android:id="@+id/face_distance_status_container"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.75"
+                        android:gravity="center_vertical"
+                        android:paddingStart="10dp"
+                        android:orientation="vertical"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.33"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.25"
+                        android:text="Pose:"
+                        android:textSize="18sp"
+                        android:gravity="center_vertical"
+                        android:paddingStart="10dp"
+                        android:textColor="#FFFFFF"/>
+                    <LinearLayout
+                        android:id="@+id/face_Pose_status_container"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.75"
+                        android:gravity="center_vertical"
+                        android:paddingStart="10dp"
+                        android:orientation="vertical"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.33"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.25"
+                        android:text="Position:"
+                        android:textSize="18sp"
+                        android:gravity="center_vertical"
+                        android:paddingStart="10dp"
+                        android:textColor="#FFFFFF"/>
+
+                    <LinearLayout
+                        android:id="@+id/face_position_status_container"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.75"
+                        android:gravity="center_vertical"
+                        android:paddingStart="10dp"
+                        android:orientation="vertical"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

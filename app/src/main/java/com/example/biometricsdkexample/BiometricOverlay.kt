@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.view.View
 
@@ -25,6 +27,10 @@ class BiometricOverlay(context: Context): View(context) {
         strokeWidth = 12f
         style = Paint.Style.STROKE
     }
+    private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.TRANSPARENT
+        xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -43,6 +49,7 @@ class BiometricOverlay(context: Context): View(context) {
         }
 
         canvas.drawRect(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat(), transparentBox)
+        canvas.drawOval(ovalRect, fillPaint)
         canvas.drawOval(ovalRect, ovalPaint)
     }
 

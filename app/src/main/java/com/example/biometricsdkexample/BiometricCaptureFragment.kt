@@ -17,18 +17,20 @@ import bio.mobai.library.biometrics.capturesession.MBPoseError
 import bio.mobai.library.biometrics.capturesession.MBPositionError
 import bio.mobai.library.biometrics.capturesession.listeners.MBBoundingBoxFaceValidatorListener
 import bio.mobai.library.biometrics.capturesession.listeners.MBCaptureProgressListener
+import bio.mobai.library.biometrics.capturesession.listeners.MBCountDownListener
 import bio.mobai.library.biometrics.capturesession.options.MBCameraOptions
 import bio.mobai.library.biometrics.capturesession.options.MBCaptureConstrains
 import bio.mobai.library.biometrics.capturesession.options.MBCaptureSessionOptions
 import bio.mobai.library.biometrics.capturesession.options.MBPreviewScaleType
 
 class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
-    MBBoundingBoxFaceValidatorListener, MBCaptureProgressListener
+    MBBoundingBoxFaceValidatorListener, MBCaptureProgressListener, MBCountDownListener
 {
     private lateinit var permissionViewModel: PermissionsViewModel
     private var captureSessionOptions = MBCaptureSessionOptions.Builder()
         .cameraQuality(MBCameraOptions(previewScaleType = MBPreviewScaleType.FILL_CENTER))
         .captureConstrains(MBCaptureConstrains.V2)
+        .timeBeforeCapture(3)
         .build()
 
     private lateinit var captureSessionService: MBCaptureSessionService
@@ -39,7 +41,10 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
     private lateinit var facePositionText: TextView
     private val notFoundText = "No face detected"
 
+    private var validFace = false
+
     private lateinit var progressBar: ProgressBar
+    private lateinit var timerText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +68,7 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
         captureSessionService = MBCaptureSessionService(requireContext(), this, captureSessionOptions)
         captureSessionService.faceBoundingBoxValidatorListener = this
         captureSessionService.captureProgressListener = this
+        captureSessionService.countDownListener = this
 
         overlay = BiometricOverlay(requireContext())
 
@@ -82,6 +88,7 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
         view.findViewById<LinearLayout>(R.id.face_position_status_container).addView(facePositionText)
         progressBar = view.findViewById(R.id.progressBar)
         progressBar.max = 100
+        timerText = view.findViewById(R.id.timer)
     }
 
     override fun onValidating(
@@ -106,6 +113,7 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
                    facePositionText.text = notFoundText
                } else {
                    if (faceBoxStatus.distanceError != null) {
+                       timerText.visibility = View.INVISIBLE
                        when(faceBoxStatus.distanceError) {
                            MBDistanceError.TOO_FAR_AWAY -> { faceDistanceText.text = "Too far away"}
                            MBDistanceError.TOO_CLOSE -> { faceDistanceText.text = "Too close" }
@@ -116,6 +124,7 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
                    if (faceBoxStatus.poseErrors.isNullOrEmpty()) {
                        facePoseText.text = "Valid pose"
                    } else {
+                       timerText.visibility = View.INVISIBLE
                        when(faceBoxStatus.poseErrors!!.first()) {
                            MBPoseError.YAW_EXCESSIVE_FACE_ROTATION -> { facePoseText.text = "Excessive yaw rotation" }
                            MBPoseError.PITCH_EXCESSIVE_FACE_ROTATION -> { facePoseText.text = "Excessive pitch rotation" }
@@ -127,6 +136,7 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
                    if (faceBoxStatus.positionErrors.isNullOrEmpty()) {
                        facePositionText.text = "Valid position"
                    } else {
+                       timerText.visibility = View.INVISIBLE
                        when(faceBoxStatus.positionErrors!!.first()) {
                            MBPositionError.TOO_FAR_UP -> { facePositionText.text = "Too far up" }
                            MBPositionError.TOO_FAR_DOWN -> {facePositionText.text = "Too far down" }
@@ -135,6 +145,7 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
                            MBPositionError.NOT_FOUND -> {}
                        }
                    }
+
                }
            }
         }
@@ -143,6 +154,17 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
     override fun onCaptureProgress(captureProgressCounter: Float) {
         requireActivity().runOnUiThread {
             progressBar.setProgress((captureProgressCounter * 100).toInt(),true)
+        }
+    }
+
+    override fun onCountdown(timeCounter: Int) {
+        requireActivity().runOnUiThread {
+            if (timeCounter != 0) {
+                timerText.visibility = View.VISIBLE
+                timerText.text = "$timeCounter"
+            } else {
+                timerText.visibility = View.INVISIBLE
+            }
         }
     }
 

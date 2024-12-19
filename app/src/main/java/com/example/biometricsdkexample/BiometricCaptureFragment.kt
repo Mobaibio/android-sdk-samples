@@ -6,10 +6,15 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import bio.mobai.library.biometrics.capturesession.MBCaptureSessionError
+import bio.mobai.library.biometrics.capturesession.MBCaptureSessionResult
 import bio.mobai.library.biometrics.capturesession.MBCaptureSessionService
+import bio.mobai.library.biometrics.capturesession.MBCaptureState
 import bio.mobai.library.biometrics.capturesession.MBDistanceError
 import bio.mobai.library.biometrics.capturesession.MBFaceBoundingBoxStatus
 import bio.mobai.library.biometrics.capturesession.MBFaceGeometryModel
@@ -17,6 +22,7 @@ import bio.mobai.library.biometrics.capturesession.MBPoseError
 import bio.mobai.library.biometrics.capturesession.MBPositionError
 import bio.mobai.library.biometrics.capturesession.listeners.MBBoundingBoxFaceValidatorListener
 import bio.mobai.library.biometrics.capturesession.listeners.MBCaptureProgressListener
+import bio.mobai.library.biometrics.capturesession.listeners.MBCaptureSessionListener
 import bio.mobai.library.biometrics.capturesession.listeners.MBCountDownListener
 import bio.mobai.library.biometrics.capturesession.options.MBCameraOptions
 import bio.mobai.library.biometrics.capturesession.options.MBCaptureConstrains
@@ -24,7 +30,10 @@ import bio.mobai.library.biometrics.capturesession.options.MBCaptureSessionOptio
 import bio.mobai.library.biometrics.capturesession.options.MBPreviewScaleType
 
 class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
-    MBBoundingBoxFaceValidatorListener, MBCaptureProgressListener, MBCountDownListener
+    MBBoundingBoxFaceValidatorListener,
+    MBCaptureProgressListener,
+    MBCountDownListener,
+    MBCaptureSessionListener
 {
     private lateinit var permissionViewModel: PermissionsViewModel
     private var captureSessionOptions = MBCaptureSessionOptions.Builder()
@@ -41,10 +50,11 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
     private lateinit var facePositionText: TextView
     private val notFoundText = "No face detected"
 
-    private var validFace = false
 
     private lateinit var progressBar: ProgressBar
     private lateinit var timerText: TextView
+
+    private lateinit var successViewModel: CaptureSuccessViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,11 +74,13 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         permissionViewModel = ViewModelProvider(requireActivity()).get(PermissionsViewModel::class.java)
+        successViewModel = ViewModelProvider(requireActivity()).get(CaptureSuccessViewModel::class.java)
 
         captureSessionService = MBCaptureSessionService(requireContext(), this, captureSessionOptions)
         captureSessionService.faceBoundingBoxValidatorListener = this
         captureSessionService.captureProgressListener = this
         captureSessionService.countDownListener = this
+        captureSessionService.captureSessionListener = this
 
         overlay = BiometricOverlay(requireContext())
 
@@ -166,6 +178,21 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
                 timerText.visibility = View.INVISIBLE
             }
         }
+    }
+
+    override fun onFailure(errorEnum: MBCaptureSessionError) {
+      Toast.makeText(requireContext(), "Capture session failed", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onStateChanged(stateEnum: MBCaptureState) {
+
+    }
+
+    override fun onSuccess(result: MBCaptureSessionResult?) {
+      requireActivity().runOnUiThread {
+          successViewModel.frameExample.value = result?.faceImage
+          findNavController().navigate(R.id.action_biometricCaptureFragment_to_framesResultFragments)
+      }
     }
 
 

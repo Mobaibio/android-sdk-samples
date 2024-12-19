@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
@@ -15,13 +16,14 @@ import bio.mobai.library.biometrics.capturesession.MBFaceGeometryModel
 import bio.mobai.library.biometrics.capturesession.MBPoseError
 import bio.mobai.library.biometrics.capturesession.MBPositionError
 import bio.mobai.library.biometrics.capturesession.listeners.MBBoundingBoxFaceValidatorListener
+import bio.mobai.library.biometrics.capturesession.listeners.MBCaptureProgressListener
 import bio.mobai.library.biometrics.capturesession.options.MBCameraOptions
 import bio.mobai.library.biometrics.capturesession.options.MBCaptureConstrains
 import bio.mobai.library.biometrics.capturesession.options.MBCaptureSessionOptions
 import bio.mobai.library.biometrics.capturesession.options.MBPreviewScaleType
 
 class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
-    MBBoundingBoxFaceValidatorListener
+    MBBoundingBoxFaceValidatorListener, MBCaptureProgressListener
 {
     private lateinit var permissionViewModel: PermissionsViewModel
     private var captureSessionOptions = MBCaptureSessionOptions.Builder()
@@ -36,6 +38,8 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
     private lateinit var facePoseText: TextView
     private lateinit var facePositionText: TextView
     private val notFoundText = "No face detected"
+
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +62,7 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
 
         captureSessionService = MBCaptureSessionService(requireContext(), this, captureSessionOptions)
         captureSessionService.faceBoundingBoxValidatorListener = this
+        captureSessionService.captureProgressListener = this
 
         overlay = BiometricOverlay(requireContext())
 
@@ -75,6 +80,8 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
         view.findViewById<LinearLayout>(R.id.face_distance_status_container).addView(faceDistanceText)
         view.findViewById<LinearLayout>(R.id.face_Pose_status_container).addView(facePoseText)
         view.findViewById<LinearLayout>(R.id.face_position_status_container).addView(facePositionText)
+        progressBar = view.findViewById(R.id.progressBar)
+        progressBar.max = 100
     }
 
     override fun onValidating(
@@ -130,6 +137,12 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
                    }
                }
            }
+        }
+    }
+
+    override fun onCaptureProgress(captureProgressCounter: Float) {
+        requireActivity().runOnUiThread {
+            progressBar.setProgress((captureProgressCounter * 100).toInt(),true)
         }
     }
 

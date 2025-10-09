@@ -38,7 +38,7 @@ android {
 dependencies {
     implementation ("androidx.navigation:navigation-fragment-ktx:2.8.0")
     implementation ("androidx.navigation:navigation-ui-ktx:2.8.0")
-    implementation ("bio.mobai:biometric:2.1.2")
+    implementation ("bio.mobai:biometric:2.3.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

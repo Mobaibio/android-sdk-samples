@@ -1,6 +1,7 @@
     package com.example.biometricsdkexample
 
     import android.os.Bundle
+    import android.util.Base64
     import android.view.View
     import android.widget.FrameLayout
     import android.widget.LinearLayout
@@ -28,7 +29,8 @@
     import bio.mobai.library.biometrics.capturesession.options.MBCaptureConstrains
     import bio.mobai.library.biometrics.capturesession.options.MBCaptureSessionOptions
     import bio.mobai.library.biometrics.capturesession.options.MBPreviewScaleType
-
+    import java.util.UUID
+    
     // BiometricCaptureFragment handles biometric capture using the Mobai SDK.
     class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
         MBBoundingBoxFaceValidatorListener, // Listens for face bounding box validation events
@@ -53,8 +55,8 @@
         private lateinit var facePoseText: TextView
         private lateinit var facePositionText: TextView
         private val notFoundText = "No face detected"
-
-
+        
+        private lateinit var sessionId: String
 
         private lateinit var progressBar: ProgressBar
         private lateinit var timerText: TextView
@@ -95,8 +97,9 @@
             // Observe camera permissions and start camera if granted
             permissionViewModel.cameraPermissionGranted.observe(requireActivity() as LifecycleOwner) { isGranted ->
                 if (isGranted) {
+                    sessionId = UUID.randomUUID().toString()
                     setOverlay(view)
-                    captureSessionService.startCamera()
+                    captureSessionService.startCamera(sessionId)
                 }
             }
         }
@@ -204,9 +207,23 @@
 
         // Callback for handling successful capture session results
         override fun onSuccess(result: MBCaptureSessionResult?) {
-          requireActivity().runOnUiThread {
-              successViewModel.frameExample.value = result?.faceImage
-              findNavController().navigate(R.id.action_biometricCaptureFragment_to_framesResultFragments)
-          }
+            result?.let{
+                successViewModel.sendVideoToLocalhost(
+                    Base64.encodeToString(result.capturedVideoData, Base64.NO_WRAP),
+                    result.sessionMetadata!!,
+                    Base64.encodeToString(result.faceImage, Base64.NO_WRAP),
+                    serverIP = "192.168.68.8",
+                    serverPort = "8000",
+                    onSuccess = {
+                        requireActivity().runOnUiThread {
+                            successViewModel.frameExample.value = result?.faceImage
+                            findNavController().navigate(R.id.action_biometricCaptureFragment_to_framesResultFragments)
+                        }
+                    },
+                    onError = {
+                    
+                    }
+                )
+            }
         }
     }

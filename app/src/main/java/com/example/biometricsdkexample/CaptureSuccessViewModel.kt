@@ -36,11 +36,11 @@ class CaptureSuccessViewModel : ViewModel() {
             try {
                 val url = URL("http://$serverIP:$serverPort/videoToDecodeDemo")
                 
-                connection = withContext(Dispatchers.IO){
+                connection = withContext(Dispatchers.IO) {
                     url.openConnection() as HttpURLConnection
                 }
                 
-                withContext(Dispatchers.IO){
+                withContext(Dispatchers.IO) {
                     connection.apply {
                         requestMethod = "POST"
                         setRequestProperty("Content-Type", "application/json")
@@ -104,9 +104,9 @@ class CaptureSuccessViewModel : ViewModel() {
                 
                 val jsonPayload = """
                     {
-                        "video_base64": "$escapedVideoData",
+                        video_base64": "$escapedVideoData",
                         "session_meta_data": "$sessionMetaData",
-                        "filename": "$fileName"
+                        "face_image_base64": "$faceImageDataBase64"
                     }
                 """.trimIndent()
                 
@@ -149,7 +149,7 @@ class CaptureSuccessViewModel : ViewModel() {
                     }
                     onError?.invoke(Exception(errorMessage))
                 }
-            }catch (e: Exception) {
+            } catch (e: Exception) {
                 // Provide helpful debugging information
                 val errorMessage = when (e) {
                     is ConnectException -> "Connection failed - Check if server is running and IP is correct"

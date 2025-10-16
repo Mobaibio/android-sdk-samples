@@ -104,7 +104,7 @@ class CaptureSuccessViewModel : ViewModel() {
                 
                 val jsonPayload = """
                     {
-                        video_base64": "$escapedVideoData",
+                        "video_base64": "$escapedVideoData",
                         "session_meta_data": "$sessionMetaData",
                         "face_image_base64": "$faceImageDataBase64"
                     }

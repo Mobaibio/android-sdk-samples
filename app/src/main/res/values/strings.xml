@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Biometric SDK Example</string>
     <string name="btn_start_biometric_session_text">Start Biometric Session</string>
+    <string name="serverIp">192.168.68.59</string>
+    <string name="serverPort">8000</string>
+    <string name="endPoint">videoToDecodeDemo</string>
+    <string name="sessionId"></string>
 </resources>

@@ -148,6 +148,8 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
                 } else {
                     updateValidationUI(faceBoxStatus)
                 }
+            }?:run {
+                updateValidationUI(faceBoxStatus)
             }
         }
     }

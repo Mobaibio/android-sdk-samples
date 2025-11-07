@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.example.biometricsdkexample"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.biometricsdkexample"
         minSdk = 25
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -36,8 +36,8 @@ android {
 }
 
 dependencies {
-    implementation ("androidx.navigation:navigation-fragment-ktx:2.8.0")
-    implementation ("androidx.navigation:navigation-ui-ktx:2.8.0")
+    implementation ("androidx.navigation:navigation-fragment-ktx:2.9.6")
+    implementation ("androidx.navigation:navigation-ui-ktx:2.9.6")
     implementation ("bio.mobai:biometric:2.3.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

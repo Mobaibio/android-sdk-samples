@@ -55,7 +55,7 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
     private lateinit var facePositionText: TextView
     private val notFoundText = "No face detected"
     
-    private lateinit var sessionId: String
+    private var sessionId: String? = null
     
     private lateinit var progressBar: ProgressBar
     private lateinit var timerText: TextView
@@ -95,7 +95,7 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
         
         // Initialize overlay for guiding user during capture
         biometricOverlay = BiometricOverlay(requireContext())
-        val sessionId: String? = getString(R.string.sessionId).ifEmpty {
+        sessionId = getString(R.string.sessionId).ifEmpty {
             null
         }
         // Observe camera permissions and start camera if granted

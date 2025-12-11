@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,5 +9,208 @@
     <ImageView
         android:id="@+id/iv_frame_example"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</FrameLayout>
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/txt_transaction_ended"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_transaction_label"
+        android:elevation="4dp"
+        android:gravity="center"
+        android:letterSpacing="0.05"
+        android:lineSpacingExtra="4dp"
+        android:padding="16dp"
+        android:text="@string/app_name"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.13999999" />
+
+    <TextView
+        android:id="@+id/txt_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-10dp"
+        android:layout_marginTop="16dp"
+        android:text="Result:"
+        android:textColor="@android:color/holo_orange_light"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/txt_transaction_ended"
+        app:layout_constraintTop_toBottomOf="@+id/txt_transaction_ended" />
+
+    <TextView
+        android:id="@+id/txt_recognition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Face Recognition:"
+        android:textColor="@android:color/holo_orange_light"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/txt_result"
+        app:layout_constraintTop_toBottomOf="@+id/txt_result" />
+
+    <TextView
+        android:id="@+id/txt_pad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PAD Check:"
+        android:textColor="@android:color/holo_orange_light"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/txt_result"
+        app:layout_constraintTop_toBottomOf="@+id/txt_recognition" />
+
+    <TextView
+        android:id="@+id/txt_authenticity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Authenticity Check:"
+        android:textColor="@android:color/holo_orange_light"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/txt_result"
+        app:layout_constraintTop_toBottomOf="@+id/txt_pad" />
+
+    <TextView
+        android:id="@+id/txt_integrity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Integrity Check:"
+        android:textColor="@android:color/holo_orange_light"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/txt_result"
+        app:layout_constraintTop_toBottomOf="@+id/txt_authenticity" />
+
+    <TextView
+        android:id="@+id/txt_deepfake"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Deepfake Check:"
+        android:textColor="@android:color/holo_orange_light"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/txt_result"
+        app:layout_constraintTop_toBottomOf="@+id/txt_integrity" />
+
+    <TextView
+        android:id="@+id/txt_face_quality"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Face Quality:"
+        android:textColor="@android:color/holo_orange_light"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/txt_transaction_ended"
+        app:layout_constraintTop_toBottomOf="@+id/txt_deepfake" />
+
+    <TextView
+        android:id="@+id/txt_illuminance_uniformity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="Illumination Uniformity"
+        android:textColor="@android:color/holo_orange_light"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/txt_result"
+        app:layout_constraintTop_toBottomOf="@+id/txt_face_quality" />
+
+    <TextView
+        android:id="@+id/txt_luminance_mean"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lumination Mean"
+        android:textColor="@android:color/holo_orange_light"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/txt_illuminance_uniformity"
+        app:layout_constraintTop_toBottomOf="@+id/txt_illuminance_uniformity" />
+
+    <TextView
+        android:id="@+id/txt_luminance_variance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lumination Variance"
+        android:textColor="@android:color/holo_orange_light"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/txt_illuminance_uniformity"
+        app:layout_constraintTop_toBottomOf="@+id/txt_luminance_mean" />
+
+    <TextView
+        android:id="@+id/txt_under_exposure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Under Exposure Prevention"
+        android:textColor="@android:color/holo_orange_light"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/txt_illuminance_uniformity"
+        app:layout_constraintTop_toBottomOf="@+id/txt_luminance_variance" />
+
+    <TextView
+        android:id="@+id/txt_over_exposure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Over Exposure Prevention"
+        android:textColor="@android:color/holo_orange_light"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/txt_illuminance_uniformity"
+        app:layout_constraintTop_toBottomOf="@+id/txt_under_exposure" />
+
+    <TextView
+        android:id="@+id/txt_dynamic_range"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dynamic Range"
+        android:textColor="@android:color/holo_orange_light"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/txt_illuminance_uniformity"
+        app:layout_constraintTop_toBottomOf="@+id/txt_over_exposure" />
+
+    <TextView
+        android:id="@+id/txt_sharpness"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sharpness"
+        android:textColor="@android:color/holo_orange_light"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/txt_illuminance_uniformity"
+        app:layout_constraintTop_toBottomOf="@+id/txt_dynamic_range" />
+
+    <TextView
+        android:id="@+id/txt_natural_color"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Natural Color"
+        android:textColor="@android:color/holo_orange_light"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/txt_illuminance_uniformity"
+        app:layout_constraintTop_toBottomOf="@+id/txt_sharpness" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_back"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#F2C04C"
+        android:gravity="center"
+        android:text="Back to Home Page"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

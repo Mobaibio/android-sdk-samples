@@ -18,9 +18,10 @@ import java.net.UnknownHostException
 
 class CaptureSuccessViewModel : ViewModel() {
     var frameExample = MutableLiveData<ByteArray>()
+    var responseFromServer: String = ""
     private val defalultDispatcher: CoroutineDispatcher = Dispatchers.Main
     private val scope = CoroutineScope(defalultDispatcher)
-    
+
     fun sendVideoToLocalhost(
         videoDataBase64: String,
         sessionMetaData: String,
@@ -28,19 +29,19 @@ class CaptureSuccessViewModel : ViewModel() {
         serverIP: String = "",
         serverPort: String = "",
         endPoint: String = "",
-        onSuccess: (() -> Unit)? = null,
+        onSuccess: ((String) -> Unit)? = null,
         onError: ((Exception) -> Unit)? = null
     ) {
         scope.launch {
             var connection: HttpURLConnection? = null
-            
+
             try {
                 val url = URL("http://$serverIP:$serverPort$endPoint")
-                
+
                 connection = withContext(Dispatchers.IO) {
                     url.openConnection() as HttpURLConnection
                 }
-                
+
                 withContext(Dispatchers.IO) {
                     connection.apply {
                         requestMethod = "POST"
@@ -51,14 +52,14 @@ class CaptureSuccessViewModel : ViewModel() {
                         readTimeout = 10000 // 10 seconds
                     }
                 }
-                
+
                 // Generate filename with timestamp
                 val timestamp = System.currentTimeMillis()
                 val fileName = "android_video_$timestamp.mp4"
-                
+
                 // Validate and clean the video data
                 val cleanVideoData = videoDataBase64.trim()
-                
+
                 // Check if video data is valid base64
                 val isValidBase64 = try {
                     Base64.decode(cleanVideoData, Base64.DEFAULT)
@@ -66,21 +67,21 @@ class CaptureSuccessViewModel : ViewModel() {
                 } catch (e: Exception) {
                     false
                 }
-                
+
                 if (!isValidBase64) {
                     onError?.invoke(Exception("Invalid base64 video data"))
                     return@launch
                 }
-                
+
                 if (cleanVideoData.isEmpty()) {
                     onError?.invoke(Exception("Video data is empty"))
                     return@launch
                 }
-                
+
                 // Decode a small portion to check if it looks like H.264
                 try {
                     val videoBytes = Base64.decode(cleanVideoData, Base64.DEFAULT)
-                    
+
                     // Check for H.264 start codes (0x00 0x00 0x00 0x01 or 0x00 0x00 0x01)
                     val hasH264StartCode = videoBytes.size > 4 && (
                             (videoBytes[0] == 0x00.toByte() && videoBytes[1] == 0x00.toByte() &&
@@ -88,11 +89,11 @@ class CaptureSuccessViewModel : ViewModel() {
                                     (videoBytes[0] == 0x00.toByte() && videoBytes[1] == 0x00.toByte() &&
                                             videoBytes[2] == 0x01.toByte())
                             )
-                    
+
                 } catch (e: Exception) {
                     // Continue even if H.264 validation fails
                 }
-                
+
                 // Create JSON payload with proper escaping
                 val escapedVideoData = cleanVideoData
                     .replace("\\", "\\\\")
@@ -102,7 +103,7 @@ class CaptureSuccessViewModel : ViewModel() {
                     .replace("\t", "\\t")
                     .replace("\u0008", "\\b")  // backspace
                     .replace("\u000C", "\\f")  // form feed
-                
+
                 val jsonPayload = """
                     {
                         "video_base64": "$escapedVideoData",
@@ -110,18 +111,18 @@ class CaptureSuccessViewModel : ViewModel() {
                         "face_image_base64": "$faceImageDataBase64"
                     }
                 """.trimIndent()
-                
+
                 withContext(Dispatchers.IO) {
                     OutputStreamWriter(connection.outputStream).use { writer ->
                         writer.write(jsonPayload)
                         writer.flush()
                     }
                 }
-                
+
                 val responseCode = withContext(Dispatchers.IO) {
                     connection.responseCode
                 }
-                
+
                 val response = withContext(Dispatchers.IO) {
                     if (responseCode in 200..299) {
                         connection.inputStream.bufferedReader().use { it.readText() }
@@ -129,17 +130,10 @@ class CaptureSuccessViewModel : ViewModel() {
                         connection.errorStream.bufferedReader().use { it.readText() }
                     }
                 }
-                
+
                 if (responseCode in 200..299) {
                     // Parse response to get video info
-                    try {
-                        // Simple JSON parsing for logging (you might want to use a proper JSON library)
-                        if (response.contains("\"status\":\"OK\"")) {
-                            onSuccess?.invoke()
-                        }
-                    } catch (e: Exception) {
-                        // Continue even if response parsing fails
-                    }
+                    onSuccess?.invoke(response)
                 } else {
                     // Handle specific error codes
                     val errorMessage = when (responseCode) {

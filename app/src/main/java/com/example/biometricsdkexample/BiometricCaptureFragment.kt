@@ -1,5 +1,6 @@
 package com.example.biometricsdkexample
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Base64
 import android.view.View
@@ -11,7 +12,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import bio.mobai.library.biometrics.capturesession.MBCaptureSessionError
 import bio.mobai.library.biometrics.capturesession.MBCaptureSessionResult
 import bio.mobai.library.biometrics.capturesession.MBCaptureSessionService
@@ -25,10 +25,7 @@ import bio.mobai.library.biometrics.capturesession.listeners.MBBoundingBoxFaceVa
 import bio.mobai.library.biometrics.capturesession.listeners.MBCaptureProgressListener
 import bio.mobai.library.biometrics.capturesession.listeners.MBCaptureSessionListener
 import bio.mobai.library.biometrics.capturesession.listeners.MBCountDownListener
-import bio.mobai.library.biometrics.capturesession.options.MBCameraOptions
-import bio.mobai.library.biometrics.capturesession.options.MBCaptureConstrains
-import bio.mobai.library.biometrics.capturesession.options.MBCaptureSessionOptions
-import bio.mobai.library.biometrics.capturesession.options.MBPreviewScaleType
+import dmax.dialog.SpotsDialog
 
 // BiometricCaptureFragment handles biometric capture using the Mobai SDK.
 class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
@@ -37,62 +34,64 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
     MBCountDownListener,                // Monitors countdown events during capture
     MBCaptureSessionListener            // Listens for capture session state changes
 {
-    
+
     private lateinit var permissionViewModel: PermissionsViewModel
-    private var captureSessionOptions = MBCaptureSessionOptions.Builder()
+    /*private var captureSessionOptions = MBCaptureSessionOptions.Builder()
         .cameraQuality(MBCameraOptions(previewScaleType = MBPreviewScaleType.FILL_CENTER))
         .captureConstrains(MBCaptureConstrains.V2)
         .timeBeforeCapture(3)
-        .build()
-    
+        .build()*/
+
     // Capture session service to manage the biometric capture process
     private lateinit var captureSessionService: MBCaptureSessionService
     private lateinit var biometricOverlay: BiometricOverlay
-    
+
     // UI elements for displaying capture status
     private lateinit var faceDistanceText: TextView
     private lateinit var facePoseText: TextView
     private lateinit var facePositionText: TextView
     private val notFoundText = "No face detected"
-    
+
     private var sessionId: String? = null
-    
+
     private lateinit var progressBar: ProgressBar
     private lateinit var timerText: TextView
-    
+
     private lateinit var successViewModel: CaptureSuccessViewModel
-    
+
+    private lateinit var progress: AlertDialog
+
     // Initialize TextViews to display status information
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         facePoseText = TextView(requireContext())
         facePoseText.text = notFoundText
         facePoseText.textSize = 18f
-        
+
         faceDistanceText = TextView(requireContext())
         faceDistanceText.text = notFoundText
         faceDistanceText.textSize = 18f
-        
+
         facePositionText = TextView(requireContext())
         facePositionText.text = notFoundText
         facePositionText.textSize = 18f
     }
-    
+
     // Set up ViewModels to observe and manage state
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         permissionViewModel =
-            ViewModelProvider(requireActivity()).get(PermissionsViewModel::class.java)
+            ViewModelProvider(requireActivity())[PermissionsViewModel::class.java]
         successViewModel =
-            ViewModelProvider(requireActivity()).get(CaptureSuccessViewModel::class.java)
-        
+            ViewModelProvider(requireActivity())[CaptureSuccessViewModel::class.java]
+
         captureSessionService =
-            MBCaptureSessionService(requireContext(), this, captureSessionOptions)
+            MBCaptureSessionService(requireContext(), this, AppData.shared.captureSessionOptions)
         captureSessionService.faceBoundingBoxValidatorListener = this
         captureSessionService.captureProgressListener = this
         captureSessionService.countDownListener = this
         captureSessionService.captureSessionListener = this
-        
+
         // Initialize overlay for guiding user during capture
         biometricOverlay = BiometricOverlay(requireContext())
         sessionId = getString(R.string.sessionId).ifEmpty {
@@ -106,25 +105,25 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
             }
         }
     }
-    
+
     // Sets up overlay and status indicators
     private fun setOverlay(view: View) {
         view.findViewById<FrameLayout>(R.id.biometric_container).apply {
             addView(captureSessionService.getCaptureSessionView())
             addView(biometricOverlay)
         }
-        
+
         view.findViewById<LinearLayout>(R.id.face_distance_status_container)
             .addView(faceDistanceText)
         view.findViewById<LinearLayout>(R.id.face_Pose_status_container).addView(facePoseText)
         view.findViewById<LinearLayout>(R.id.face_position_status_container)
             .addView(facePositionText)
-        
+
         progressBar = view.findViewById<ProgressBar>(R.id.progressBar).apply { max = 100 }
         timerText = view.findViewById(R.id.timer)
     }
-    
-    
+
+
     // Callback for validating face bounding box during capture
     override fun onValidating(
         faceBoxStatus: MBFaceBoundingBoxStatus,
@@ -134,10 +133,10 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
             faceBoxStatus.positionErrors == null &&
                     faceBoxStatus.poseErrors == null &&
                     faceBoxStatus.distanceError == null -> BiometricOverlay.BorderColor.GREEN
-            
+
             else -> BiometricOverlay.BorderColor.YELLOW
         }
-        
+
         // Update UI with face validation results
         requireActivity().runOnUiThread {
             faceBoxStatus.positionErrors?.let {
@@ -148,12 +147,12 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
                 } else {
                     updateValidationUI(faceBoxStatus)
                 }
-            }?:run {
+            } ?: run {
                 updateValidationUI(faceBoxStatus)
             }
         }
     }
-    
+
     // Updates UI elements based on validation results
     private fun updateValidationUI(faceBoxStatus: MBFaceBoundingBoxStatus) {
         faceBoxStatus.distanceError?.let {
@@ -164,7 +163,7 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
                 else -> "Valid distance"
             }
         } ?: run { faceDistanceText.text = "Valid distance" }
-        
+
         faceBoxStatus.poseErrors?.firstOrNull()?.let {
             timerText.visibility = View.INVISIBLE
             facePoseText.text = when (it) {
@@ -174,7 +173,7 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
                 else -> "Valid pose"
             }
         } ?: run { facePoseText.text = "Valid pose" }
-        
+
         faceBoxStatus.positionErrors?.firstOrNull()?.let {
             timerText.visibility = View.INVISIBLE
             facePositionText.text = when (it) {
@@ -186,14 +185,14 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
             }
         } ?: run { facePositionText.text = "Valid position" }
     }
-    
+
     // Callback for updating capture progress
     override fun onCaptureProgress(captureProgressCounter: Float) {
         requireActivity().runOnUiThread {
             progressBar.setProgress((captureProgressCounter * 100).toInt(), true)
         }
     }
-    
+
     // Callback for countdown timer during capture
     override fun onCountdown(timeCounter: Int) {
         requireActivity().runOnUiThread {
@@ -205,22 +204,28 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
             }
         }
     }
-    
+
     // Callback for handling capture session failure
     override fun onFailure(errorEnum: MBCaptureSessionError) {
-        Toast.makeText(requireContext(), "Capture session failed", Toast.LENGTH_SHORT).show()
+        requireActivity().runOnUiThread {
+            Toast.makeText(requireContext(), "Capture session failed", Toast.LENGTH_SHORT).show()
+        }
     }
-    
+
     // Callback for changes in capture session state
     override fun onStateChanged(stateEnum: MBCaptureState) {
         // Handle state changes if necessary
     }
-    
+
     // Callback for handling successful capture session results
     override fun onSuccess(result: MBCaptureSessionResult?) {
+        requireActivity().runOnUiThread {
+            progress = SpotsDialog.Builder().setContext(requireContext()).setMessage("Verifying...").build()
+            progress.show()
+        }
         result?.let {
             var endPoint = getString(R.string.endPoint)
-            if(!endPoint.startsWith("/")){
+            if (!endPoint.startsWith("/")) {
                 endPoint = "/$endPoint"
             }
             successViewModel.sendVideoToLocalhost(
@@ -230,14 +235,17 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
                 serverIP = getString(R.string.serverIp),
                 serverPort = getString(R.string.serverPort),
                 endPoint = endPoint,
-                onSuccess = {
+                onSuccess = { response ->
+                    progress.dismiss()
                     requireActivity().runOnUiThread {
-                        successViewModel.frameExample.value = result?.faceImage
-                        findNavController().navigate(R.id.action_biometricCaptureFragment_to_framesResultFragments)
+                        val action =
+                            BiometricCaptureFragmentDirections.actionBiometricCaptureFragmentToFramesResultFragments()
+                        successViewModel.responseFromServer = response
+                        safeNavigation(action)
                     }
                 },
                 onError = {
-                    
+                    progress.dismiss()
                 }
             )
         }

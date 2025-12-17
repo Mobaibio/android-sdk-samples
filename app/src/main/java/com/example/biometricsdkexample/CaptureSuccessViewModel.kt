@@ -26,8 +26,6 @@ class CaptureSuccessViewModel : ViewModel() {
         videoDataBase64: String,
         sessionMetaData: String,
         faceImageDataBase64: String,
-        serverIP: String = "",
-        serverPort: String = "",
         endPoint: String = "",
         onSuccess: ((String) -> Unit)? = null,
         onError: ((Exception) -> Unit)? = null
@@ -36,7 +34,7 @@ class CaptureSuccessViewModel : ViewModel() {
             var connection: HttpURLConnection? = null
 
             try {
-                val url = URL("http://$serverIP:$serverPort$endPoint")
+                val url = URL("${AppData.shared.backendServerAddress}$endPoint")
 
                 connection = withContext(Dispatchers.IO) {
                     url.openConnection() as HttpURLConnection

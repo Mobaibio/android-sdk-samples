@@ -4,6 +4,7 @@ import bio.mobai.library.biometrics.capturesession.options.MBCaptureSessionOptio
 import bio.mobai.library.biometrics.capturesession.options.MBUIOptions
 
 class AppData {
+    lateinit var backendServerAddress: String
     lateinit var captureSessionOptions: MBCaptureSessionOptions
     lateinit var uiOptions: MBUIOptions
 

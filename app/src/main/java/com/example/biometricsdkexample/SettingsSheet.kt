@@ -14,9 +14,12 @@ import bio.mobai.library.biometrics.capturesession.options.MBPreviewScaleType
 import bio.mobai.library.biometrics.capturesession.options.MBTargetResolution
 import bio.mobai.library.biometrics.capturesession.options.MBUIOptions
 import com.example.biometricsdkexample.databinding.SheetSettingsBinding
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class SettingsSheet : BottomSheetDialogFragment() {
+    private var backendServerAddress: String = ""
     private var isDebuggingEnabled: Boolean = false
     private var isNetworkCallEnabled: Boolean = false
     private var isInjectionAttackEnabled: Boolean = false
@@ -40,6 +43,23 @@ class SettingsSheet : BottomSheetDialogFragment() {
     private var _binding: SheetSettingsBinding? = null
     private val binding get() = _binding!!
     private lateinit var prefs: SharedPreferences
+    override fun onStart() {
+        super.onStart()
+        val bottomSheet =
+            (dialog as? BottomSheetDialog)?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+                ?: return
+        val behavior = BottomSheetBehavior.from(bottomSheet)
+
+        behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    savePrefs()
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) = Unit
+        })
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,77 +74,7 @@ class SettingsSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnSave.setOnClickListener {
-            with(prefs.edit()) {
-                putBoolean("isDebuggingEnabled", isDebuggingEnabled)
-                putBoolean("isNetworkCallEnabled", isNetworkCallEnabled)
-                putBoolean("isInjectionAttackEnabled", isInjectionAttackEnabled)
-                putInt("logLevel", logLevel)
-                putBoolean("isSaveDataLocallyEnabled", isSaveDataLocallyEnabled)
-                putBoolean("isFaceStatusTextEnabled", isFaceStatusTextEnabled)
-                putBoolean("isFacePlacementTextEnabled", isFacePlacementTextEnabled)
-                putBoolean("isFaceAngleTextEnabled", isFaceAngleTextEnabled)
-                putBoolean("isTimerTextEnabled", isTimerTextEnabled)
-                putBoolean("isProgressBarEnabled", isProgressBarEnabled)
-                putBoolean("isShowOverlayFaceView", isShowOverlayFaceView)
-                putInt("cameraPosition", cameraPosition)
-                putInt("targetResolution", targetResolution)
-                putBoolean("isNewConstraintEnabled", isNewConstraintEnabled)
-                putBoolean("isPayloadOptimizationEnabled", isPayloadOptimizationEnabled)
-                putInt("captureType", captureType)
-                putInt("constraintLevel", constraintLevel)
-                putString("numberOfFrames", binding.edtNumberOfFrames.text.toString())
-                putString(
-                    "timeBeforeAutomaticCapture",
-                    binding.edtTimeBeforeInterval.text.toString()
-                )
-                putString("videoCaptureDurationMs", binding.edtDurationMs.text.toString())
-                apply()
-                commit()
-            }
-            val captureSessionOptionsBuilder = MBCaptureSessionOptions.Builder()
-                .automaticCapture(captureType == 0)
-                .cameraQuality(
-                    MBCameraOptions(
-                        cameraPosition = if (cameraPosition == 0) {
-                            MBCameraPosition.FRONT
-                        } else {
-                            MBCameraPosition.REAR
-                        },
-                        targetResolution = when (targetResolution) {
-                            0 -> MBTargetResolution.QHD
-                            1 -> MBTargetResolution.HD_720
-                            2 -> MBTargetResolution.HD_1080
-                            3 -> MBTargetResolution.HD_4K
-                            else -> MBTargetResolution.QHD
-                        },
-                        previewScaleType = MBPreviewScaleType.FILL_CENTER
-                    )
-                )
-                .captureConstrains(if (isNewConstraintEnabled) MBCaptureConstrains.V2 else MBCaptureConstrains.V1)
-                .debugging(isDebuggingEnabled)
-                .framesToCollect(Integer.parseInt(numberOfFrames))
-                .payloadOptimization(isPayloadOptimizationEnabled)
-                .timeBeforeCapture(Integer.parseInt(timeBeforeAutomaticCapture))
-                .videoCaptureDuration(Integer.parseInt(videoCaptureDurationMs))
-
-            captureSessionOptionsBuilder.showOval = isShowOverlayFaceView
-
-            val captureSessionUIOptionsBuilder = MBUIOptions.Builder()
-                .overlayFaceView(isShowOverlayFaceView)
-                .faceStatusLabel(isFaceStatusTextEnabled)
-                .progressBar(isProgressBarEnabled)
-                .countdownTimerLabel(isTimerTextEnabled)
-
-            AppData.shared.captureSessionOptions = captureSessionOptionsBuilder.build()
-            AppData.shared.uiOptions = captureSessionUIOptionsBuilder.build()
-            this.dismiss()
-        }
-
-        binding.btnExit.setOnClickListener {
-            this.dismiss()
-        }
-
+        backendServerAddress = prefs.getString("backendAddress", "http://192.168.0.113:8010")!!
         isDebuggingEnabled = prefs.getBoolean("isDebuggingEnabled", false)
         isNetworkCallEnabled = prefs.getBoolean("isNetworkCallEnabled", false)
         isInjectionAttackEnabled = prefs.getBoolean("isInjectionAttackEnabled", false)
@@ -146,6 +96,7 @@ class SettingsSheet : BottomSheetDialogFragment() {
         timeBeforeAutomaticCapture = prefs.getString("timeBeforeAutomaticCapture", "1")!!
         videoCaptureDurationMs = prefs.getString("videoCaptureDurationMs", "1000")!!
 
+        binding.edtCaptureBackend.setText(backendServerAddress)
         binding.btnGroupDebug.check(if (isDebuggingEnabled) R.id.debug_enabled else R.id.debug_disabled)
         binding.btnGroupNetwork.check(if (isNetworkCallEnabled) R.id.network_enabled else R.id.network_disabled)
         binding.btnGroupInjection.check(if (isInjectionAttackEnabled) R.id.injection_enabled else R.id.injection_disabled)
@@ -318,5 +269,72 @@ class SettingsSheet : BottomSheetDialogFragment() {
                 }
         }
 
+    }
+
+    fun savePrefs() {
+        with(prefs.edit()) {
+            putBoolean("isDebuggingEnabled", isDebuggingEnabled)
+            putBoolean("isNetworkCallEnabled", isNetworkCallEnabled)
+            putBoolean("isInjectionAttackEnabled", isInjectionAttackEnabled)
+            putInt("logLevel", logLevel)
+            putBoolean("isSaveDataLocallyEnabled", isSaveDataLocallyEnabled)
+            putBoolean("isFaceStatusTextEnabled", isFaceStatusTextEnabled)
+            putBoolean("isFacePlacementTextEnabled", isFacePlacementTextEnabled)
+            putBoolean("isFaceAngleTextEnabled", isFaceAngleTextEnabled)
+            putBoolean("isTimerTextEnabled", isTimerTextEnabled)
+            putBoolean("isProgressBarEnabled", isProgressBarEnabled)
+            putBoolean("isShowOverlayFaceView", isShowOverlayFaceView)
+            putInt("cameraPosition", cameraPosition)
+            putInt("targetResolution", targetResolution)
+            putBoolean("isNewConstraintEnabled", isNewConstraintEnabled)
+            putBoolean("isPayloadOptimizationEnabled", isPayloadOptimizationEnabled)
+            putInt("captureType", captureType)
+            putInt("constraintLevel", constraintLevel)
+            putString("numberOfFrames", binding.edtNumberOfFrames.text.toString())
+            putString(
+                "timeBeforeAutomaticCapture",
+                binding.edtTimeBeforeInterval.text.toString()
+            )
+            putString("videoCaptureDurationMs", binding.edtDurationMs.text.toString())
+            apply()
+            commit()
+        }
+        val captureSessionOptionsBuilder = MBCaptureSessionOptions.Builder()
+            .automaticCapture(captureType == 0)
+            .cameraQuality(
+                MBCameraOptions(
+                    cameraPosition = if (cameraPosition == 0) {
+                        MBCameraPosition.FRONT
+                    } else {
+                        MBCameraPosition.REAR
+                    },
+                    targetResolution = when (targetResolution) {
+                        0 -> MBTargetResolution.QHD
+                        1 -> MBTargetResolution.HD_720
+                        2 -> MBTargetResolution.HD_1080
+                        3 -> MBTargetResolution.HD_4K
+                        else -> MBTargetResolution.QHD
+                    },
+                    previewScaleType = MBPreviewScaleType.FILL_CENTER
+                )
+            )
+            .captureConstrains(if (isNewConstraintEnabled) MBCaptureConstrains.V2 else MBCaptureConstrains.V1)
+            .debugging(isDebuggingEnabled)
+            .framesToCollect(Integer.parseInt(numberOfFrames))
+            .payloadOptimization(isPayloadOptimizationEnabled)
+            .timeBeforeCapture(Integer.parseInt(timeBeforeAutomaticCapture))
+            .videoCaptureDuration(Integer.parseInt(videoCaptureDurationMs))
+
+        captureSessionOptionsBuilder.showOval = isShowOverlayFaceView
+
+        val captureSessionUIOptionsBuilder = MBUIOptions.Builder()
+            .overlayFaceView(isShowOverlayFaceView)
+            .faceStatusLabel(isFaceStatusTextEnabled)
+            .progressBar(isProgressBarEnabled)
+            .countdownTimerLabel(isTimerTextEnabled)
+
+        AppData.shared.captureSessionOptions = captureSessionOptionsBuilder.build()
+        AppData.shared.uiOptions = captureSessionUIOptionsBuilder.build()
+        AppData.shared.backendServerAddress = backendServerAddress
     }
 }

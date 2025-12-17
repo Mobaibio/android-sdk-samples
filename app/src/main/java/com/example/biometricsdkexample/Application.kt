@@ -13,6 +13,7 @@ class SdkExampleApplication:  Application(){
     override fun onCreate() {
         super.onCreate()
         val prefs = applicationContext.getSharedPreferences("CaptureSessionOptions", MODE_PRIVATE)
+        val backendServerAddress = prefs.getString("backendAddress", "http://192.168.0.113:8010")!!
         val isDebuggingEnabled = prefs.getBoolean("isDebuggingEnabled", false)
         val isNetworkCallEnabled = prefs.getBoolean("isNetworkCallEnabled", false)
         val isInjectionAttackEnabled = prefs.getBoolean("isInjectionAttackEnabled", false)
@@ -70,5 +71,6 @@ class SdkExampleApplication:  Application(){
 
         AppData.shared.captureSessionOptions = captureSessionOptionsBuilder.build()
         AppData.shared.uiOptions = captureSessionUIOptionsBuilder.build()
+        AppData.shared.backendServerAddress = backendServerAddress
     }
 }

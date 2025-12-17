@@ -12,39 +12,53 @@
         android:layout_height="wrap_content"
         tools:context=".SettingsSheet">
 
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/btn_exit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:background="@null"
-            android:src="@drawable/ic_close"
-            android:tint="#768db0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <View
+            android:id="@+id/view_bar"
             android:layout_width="50dp"
             android:layout_height="4dp"
             android:layout_marginTop="8dp"
             android:background="@android:color/darker_gray"
-            app:layout_constraintEnd_toStartOf="@+id/materialTextView"
-            app:layout_constraintStart_toEndOf="@+id/btn_exit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/btn_save"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/appCompatTextView22"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Capture Backend Address"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view_bar" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_capture_backend"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:text="Save"
-            android:textColor="#768db0"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/btn_exit"
+            android:background="@null"
+            android:backgroundTint="@android:color/transparent"
+            android:text="http://192.168.0.113:8010"
+            android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/btn_exit" />
+            app:layout_constraintStart_toStartOf="@+id/appCompatTextView2"
+            app:layout_constraintTop_toBottomOf="@+id/appCompatTextView22" />
+
+        <View
+            android:id="@+id/section_capture_backend"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edt_capture_backend" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/appCompatTextView"
@@ -56,7 +70,7 @@
             android:textColor="@android:color/darker_gray"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_exit" />
+            app:layout_constraintTop_toBottomOf="@+id/section_capture_backend" />
 
         <View
             android:id="@+id/debugging_section"

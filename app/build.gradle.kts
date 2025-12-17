@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -31,20 +33,23 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
 
     buildFeatures{
         viewBinding = true
     }
 }
 
+kotlin{
+    compilerOptions{
+        jvmTarget.set(JvmTarget.JVM_1_8)
+    }
+}
+
 dependencies {
-    implementation ("androidx.navigation:navigation-fragment-ktx:2.9.6")
-    implementation ("androidx.navigation:navigation-ui-ktx:2.9.6")
-    implementation ("bio.mobai:biometric:2.3.1")
-    implementation("com.github.AlexDeww:spots-dialog:1.1")
+    implementation (libs.androidx.navigation.navigation.fragment.ktx)
+    implementation (libs.androidx.navigation.ui.ktx)
+    implementation (libs.biometric)
+    implementation(libs.spots.dialog)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

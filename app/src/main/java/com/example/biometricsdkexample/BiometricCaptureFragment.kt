@@ -232,8 +232,6 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
                 Base64.encodeToString(result.capturedVideoData, Base64.NO_WRAP),
                 result.sessionVideoMetadata!!,
                 Base64.encodeToString(result.faceImage, Base64.NO_WRAP),
-                serverIP = getString(R.string.serverIp),
-                serverPort = getString(R.string.serverPort),
                 endPoint = endPoint,
                 onSuccess = { response ->
                     progress.dismiss()

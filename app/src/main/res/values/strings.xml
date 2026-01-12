@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Biometric SDK Example</string>
     <string name="btn_start_biometric_session_text">Start Biometric Session</string>
+    <string name="btn_start_nfc_text">Start NFC Session</string>
     <string name="serverIp">192.168.0.113</string>
     <string name="serverPort">8010</string>
     <string name="endPoint">/videoToDecode</string>

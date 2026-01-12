@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_homeFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_documentReadingFragment2"
+            app:destination="@id/documentReadingFragment2" />
     </fragment>
     <fragment
         android:id="@+id/biometricCaptureFragment"
@@ -39,9 +42,17 @@
         android:id="@+id/documentReadingFragment2"
         android:name="com.example.biometricsdkexample.documentreading.DocumentReadingFragment"
         android:label="fragment_document_reading"
-        tools:layout="@layout/fragment_document_reading" />
+        tools:layout="@layout/fragment_document_reading" >
+        <action
+            android:id="@+id/action_documentReadingFragment2_to_nfcReaderFragment"
+            app:destination="@id/nfcReaderFragment" />
+    </fragment>
     <fragment
         android:id="@+id/nfcReaderFragment"
         android:name="com.example.biometricsdkexample.nfc.NfcReaderFragment"
-        android:label="NfcReaderFragment" />
+        android:label="NfcReaderFragment" >
+        <action
+            android:id="@+id/action_nfcReaderFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
 </navigation>

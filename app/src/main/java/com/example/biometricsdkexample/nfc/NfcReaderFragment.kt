@@ -11,10 +11,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.example.biometricsdkexample.MainActivity
 import com.example.biometricsdkexample.R
 import com.example.biometricsdkexample.databinding.FragmentNfcReaderBinding
-
 import com.mobai.library.nfc_reading.MBNfcKeyFactory
 import com.mobai.library.nfc_reading.MBNfcTravelDocumentReader
 import kotlinx.coroutines.delay
@@ -109,9 +109,7 @@ class NfcReaderFragment : Fragment() {
 
                delay(1000)
                 // Ensure the fragment is still attached before popping
-                if (isAdded) {
-                    parentFragmentManager.popBackStack()
-                }
+                findNavController().navigate(R.id.action_nfcReaderFragment_to_homeFragment)
             }
         }
     }

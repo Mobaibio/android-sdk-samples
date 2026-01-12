@@ -13,6 +13,14 @@ constraintlayout = "2.2.1"
 navigationFragmentKtx = "2.9.6"
 spotsDialog = "1.1"
 
+
+nfcReadingVersion = "1.1.0"
+lifecycle = "2.10.0"
+fragmentKtx = "1.8.9"
+documentReadingVersion = "1.1.0"
+
+
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-navigation-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
@@ -27,6 +35,14 @@ androidx-activity = { group = "androidx.activity", name = "activity", version.re
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-navigation-safeargs-gradle-plugin = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "navigationFragmentKtx" }
 spots-dialog = { module = "com.github.AlexDeww:spots-dialog", version.ref = "spotsDialog" }
+
+nfc-reading = { name = "nfc-reading", module = "com.mobai:nfc_reading", version.ref = "nfcReadingVersion" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtx" }
+document-reading = { name = "document-reading", module = "bio.mobai:document", version.ref = "documentReadingVersion" }
+
+
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

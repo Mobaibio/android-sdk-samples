@@ -11,8 +11,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import bio.mobai.library.document.api.models.MBDocumentCaptureResult
 import bio.mobai.library.document.api.models.MBDocumentType
+import com.example.biometricsdkexample.MainActivity
+import com.example.biometricsdkexample.R
 import com.example.biometricsdkexample.databinding.FragmentDocumentReadingBinding
 import kotlinx.coroutines.launch
 
@@ -52,7 +55,8 @@ class DocumentReadingFragment : Fragment() {
                             putString("birth_date", keys?.second)
                             putString("expiry_date", keys?.third)
                         }
-                      //  findNavController().navigate(R.id.action_documentReadingFragment_to_nfcReaderFragment, bundle)
+                        viewModel.removeFragment(activity as MainActivity, binding.container.id)
+                       findNavController().navigate(R.id.action_documentReadingFragment2_to_nfcReaderFragment, bundle)
                     }
                 }
             }

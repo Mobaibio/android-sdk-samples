@@ -10,6 +10,10 @@ interface FragmentContainerProvider {
         containerId: Int,
         onReadingResult: (MBDocumentCaptureResult) -> Unit
     )
+    fun removeFragment(
+        activity: MainActivity,
+        id: Int
+    )
 }
 
 class FragmentContainerProviderImpl(
@@ -33,6 +37,22 @@ class FragmentContainerProviderImpl(
                     .replace(containerId, fragment)
                     .commitAllowingStateLoss()
             }
+        }
+    }
+
+    override fun removeFragment(
+        activity: MainActivity,
+        id: Int
+    ) {
+        val fragmentManager = activity.supportFragmentManager
+        val fragment = fragmentManager.findFragmentById(id)
+
+        if (fragment != null && !fragmentManager.isStateSaved) {
+            fragmentManager
+                .beginTransaction()
+                .remove(fragment)
+                .commitNow()
+            fragmentManager.executePendingTransactions()
         }
     }
 

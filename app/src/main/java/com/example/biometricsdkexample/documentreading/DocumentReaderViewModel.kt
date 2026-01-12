@@ -20,4 +20,8 @@ class DocumentReaderViewModel(
        fragmentContainerProvider.setupFragment(context as MainActivity,containerId, onReadingResult = { _document.value = it})
     }
 
+    fun removeFragment(activity: MainActivity, id: Int) {
+        fragmentContainerProvider.removeFragment(activity, id)
+    }
+
 }

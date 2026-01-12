@@ -41,6 +41,21 @@
         android:layout_marginBottom="16dp"
         android:backgroundTint="#F2C04C"
         android:gravity="center"
+        android:text="@string/btn_start_nfc_text"
+        app:layout_constraintBottom_toTopOf="@+id/btn_start_nfc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_start_nfc"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#F2C04C"
+        android:gravity="center"
         android:text="@string/btn_start_biometric_session_text"
         app:layout_constraintBottom_toTopOf="@+id/version"
         app:layout_constraintEnd_toEndOf="parent"

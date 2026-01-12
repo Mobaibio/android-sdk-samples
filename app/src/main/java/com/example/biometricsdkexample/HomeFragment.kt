@@ -23,12 +23,16 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.btnStart.setOnClickListener {
-            val action = HomeFragmentDirections.actionHomeFragmentToBiometricCaptureFragment()
+            val action = HomeFragmentDirections.actionHomeFragmentToDocumentReadingFragment2()
             safeNavigation(action)
         }
 
         binding.btnSettings.setOnClickListener {
             SettingsSheet().show(parentFragmentManager, "")
+        }
+        binding.btnStartNfc.setOnClickListener {
+            val action = HomeFragmentDirections.actionHomeFragmentToBiometricCaptureFragment()
+            safeNavigation(action)
         }
     }
 }

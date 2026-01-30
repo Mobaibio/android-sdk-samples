@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.Px
 import kotlin.math.min
+import androidx.core.graphics.toColorInt
 
 class CornerFrameOverlayView @JvmOverloads constructor(
     context: Context,
@@ -100,9 +101,9 @@ class CornerFrameOverlayView @JvmOverloads constructor(
         }
 
     private fun colorFor(state: CornerState): Int = when (state) {
-        CornerState.NEUTRAL -> Color.WHITE
-        CornerState.PASS -> Color.parseColor("#34C759")
-        CornerState.FAIL -> Color.parseColor("#FF3B30")
+        CornerState.NEUTRAL -> "#F0F9FD".toColorInt()
+        CornerState.PASS -> "#9BCF88".toColorInt()
+        CornerState.FAIL -> "#FF8888".toColorInt()
     }
 
     private fun updatePaints() {

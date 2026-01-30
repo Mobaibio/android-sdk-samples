@@ -158,32 +158,8 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
         }
 
         val positionalErrors = faceBoxStatus.positionErrors ?: emptyList()
-        val failed: MutableSet<Corner> = mutableSetOf()
 
-        for (error in positionalErrors) {
-            when (error) {
-                MBPositionError.TOO_FAR_LEFT ->
-                    failed.addAll(setOf(Corner.TOP_LEFT, Corner.BOTTOM_LEFT))
-
-                MBPositionError.TOO_FAR_RIGHT ->
-                    failed.addAll(setOf(Corner.TOP_RIGHT, Corner.BOTTOM_RIGHT))
-
-                MBPositionError.TOO_FAR_UP ->
-                    failed.addAll(setOf(Corner.TOP_LEFT, Corner.TOP_RIGHT))
-
-                MBPositionError.TOO_FAR_DOWN ->
-                    failed.addAll(setOf(Corner.BOTTOM_LEFT, Corner.BOTTOM_RIGHT))
-
-                else ->
-                    failed.addAll(
-                        setOf(
-                            Corner.TOP_LEFT, Corner.TOP_RIGHT,
-                            Corner.BOTTOM_LEFT, Corner.BOTTOM_RIGHT
-                        )
-                    )
-            }
-        }
-
+        val failed = failedCorners(positionalErrors)
         val states: MutableMap<Corner, CornerState> = mutableMapOf()
         for (c in Corner.entries) {
             states[c] = if (failed.contains(c)) CornerState.FAIL else CornerState.PASS
@@ -302,5 +278,61 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
                 }
             )
         }
+    }
+
+    private fun failedCorners(positionalErrors: List<MBPositionError>): Set<Corner> {
+        if (positionalErrors.contains(MBPositionError.NOT_FOUND)) {
+            return setOf(
+                Corner.TOP_LEFT, Corner.TOP_RIGHT,
+                Corner.BOTTOM_LEFT, Corner.BOTTOM_RIGHT
+            )
+        }
+
+        val hasLeft = positionalErrors.contains(MBPositionError.TOO_FAR_LEFT)
+        val hasRight = positionalErrors.contains(MBPositionError.TOO_FAR_RIGHT)
+        val hasUp = positionalErrors.contains(MBPositionError.TOO_FAR_UP)
+        val hasDown = positionalErrors.contains(MBPositionError.TOO_FAR_DOWN)
+
+        if ((hasLeft && hasRight) || (hasUp && hasDown)) {
+            return setOf(
+                Corner.TOP_LEFT, Corner.TOP_RIGHT,
+                Corner.BOTTOM_LEFT, Corner.BOTTOM_RIGHT
+            )
+        }
+
+        val failed: MutableSet<Corner> = mutableSetOf()
+        if (hasLeft && hasDown) {
+            failed.add(Corner.BOTTOM_LEFT)
+        }
+        if(hasLeft && hasUp){
+            failed.add(Corner.TOP_LEFT)
+        }
+
+        if (hasRight && hasDown) {
+            failed.add(Corner.BOTTOM_RIGHT)
+        }
+        if(hasRight && hasUp){
+            failed.add(Corner.TOP_RIGHT)
+        }
+
+        if(failed.isEmpty()){
+            if(hasLeft){
+                failed.addAll(setOf(Corner.TOP_LEFT, Corner.BOTTOM_LEFT))
+            }
+
+            if(hasRight){
+                failed.addAll(setOf(Corner.TOP_RIGHT, Corner.BOTTOM_RIGHT))
+            }
+
+            if(hasUp){
+                failed.addAll(setOf(Corner.TOP_LEFT, Corner.TOP_RIGHT))
+            }
+
+            if(hasDown){
+                failed.addAll(setOf(Corner.BOTTOM_LEFT, Corner.BOTTOM_RIGHT))
+            }
+        }
+
+        return failed
     }
 }

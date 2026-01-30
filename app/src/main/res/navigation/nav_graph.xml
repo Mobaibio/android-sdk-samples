@@ -22,7 +22,7 @@
     </fragment>
     <fragment
         android:id="@+id/biometricCaptureFragment"
-        android:name="com.example.biometricsdkexample.BiometricCaptureFragment"
+        android:name="com.example.biometricsdkexample.biometric.BiometricCaptureFragment"
         android:label="fragment_biometric_capture"
         tools:layout="@layout/fragment_biometric_capture" >
         <action

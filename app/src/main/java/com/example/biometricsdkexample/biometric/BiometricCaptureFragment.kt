@@ -1,4 +1,4 @@
-package com.example.biometricsdkexample
+package com.example.biometricsdkexample.biometric
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -25,6 +25,12 @@ import bio.mobai.library.biometrics.capturesession.listeners.MBBoundingBoxFaceVa
 import bio.mobai.library.biometrics.capturesession.listeners.MBCaptureProgressListener
 import bio.mobai.library.biometrics.capturesession.listeners.MBCaptureSessionListener
 import bio.mobai.library.biometrics.capturesession.listeners.MBCountDownListener
+import com.example.biometricsdkexample.AppData
+import com.example.biometricsdkexample.CaptureSuccessViewModel
+import com.example.biometricsdkexample.PermissionsViewModel
+import com.example.biometricsdkexample.R
+import com.example.biometricsdkexample.biometric.CornerFrameOverlayView.*
+import com.example.biometricsdkexample.safeNavigation
 import dmax.dialog.SpotsDialog
 
 // BiometricCaptureFragment handles biometric capture using the Mobai SDK.
@@ -44,7 +50,8 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
 
     // Capture session service to manage the biometric capture process
     private lateinit var captureSessionService: MBCaptureSessionService
-    private lateinit var biometricOverlay: BiometricOverlay
+    private lateinit var biometricOverlay: CornerFrameOverlayView
+    private lateinit var ovalOverlay: BiometricOverlay
 
     // UI elements for displaying capture status
     private lateinit var faceDistanceText: TextView
@@ -92,8 +99,20 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
         captureSessionService.countDownListener = this
         captureSessionService.captureSessionListener = this
 
-        // Initialize overlay for guiding user during capture
-        biometricOverlay = BiometricOverlay(requireContext())
+        biometricOverlay = CornerFrameOverlayView(requireContext())
+        ovalOverlay = BiometricOverlay(requireContext())
+
+        biometricOverlay.style = biometricOverlay.style.copy(
+            lineWidth = 6f.dp(requireContext()),
+            cornerLength = 44f.dp(requireContext()),
+            cornerRadius = 18f.dp(requireContext()),
+
+            frameWidth = 260f.dp(requireContext()),
+            frameHeight = 360f.dp(requireContext()),
+
+            centerOffsetY = (0f).dp(requireContext())
+        )
+
         sessionId = getString(R.string.sessionId).ifEmpty {
             null
         }
@@ -111,6 +130,7 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
         view.findViewById<FrameLayout>(R.id.biometric_container).apply {
             addView(captureSessionService.getCaptureSessionView())
             addView(biometricOverlay)
+            addView(ovalOverlay)
         }
 
         view.findViewById<LinearLayout>(R.id.face_distance_status_container)
@@ -129,13 +149,47 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
         faceBoxStatus: MBFaceBoundingBoxStatus,
         faceGeometry: MBFaceGeometryModel
     ) {
-        biometricOverlay.ovalColor = when {
+        ovalOverlay.ovalColor = when {
             faceBoxStatus.positionErrors == null &&
                     faceBoxStatus.poseErrors == null &&
                     faceBoxStatus.distanceError == null -> BiometricOverlay.BorderColor.GREEN
 
             else -> BiometricOverlay.BorderColor.YELLOW
         }
+
+        val positionalErrors = faceBoxStatus.positionErrors ?: emptyList()
+        val failed: MutableSet<Corner> = mutableSetOf()
+
+        for (error in positionalErrors) {
+            when (error) {
+                MBPositionError.TOO_FAR_LEFT ->
+                    failed.addAll(setOf(Corner.TOP_LEFT, Corner.BOTTOM_LEFT))
+
+                MBPositionError.TOO_FAR_RIGHT ->
+                    failed.addAll(setOf(Corner.TOP_RIGHT, Corner.BOTTOM_RIGHT))
+
+                MBPositionError.TOO_FAR_UP ->
+                    failed.addAll(setOf(Corner.TOP_LEFT, Corner.TOP_RIGHT))
+
+                MBPositionError.TOO_FAR_DOWN ->
+                    failed.addAll(setOf(Corner.BOTTOM_LEFT, Corner.BOTTOM_RIGHT))
+
+                else ->
+                    failed.addAll(
+                        setOf(
+                            Corner.TOP_LEFT, Corner.TOP_RIGHT,
+                            Corner.BOTTOM_LEFT, Corner.BOTTOM_RIGHT
+                        )
+                    )
+            }
+        }
+
+        val states: MutableMap<Corner, CornerState> = mutableMapOf()
+        for (c in Corner.entries) {
+            states[c] = if (failed.contains(c)) CornerState.FAIL else CornerState.PASS
+        }
+
+        biometricOverlay.setStates(states)
 
         // Update UI with face validation results
         requireActivity().runOnUiThread {
@@ -220,7 +274,8 @@ class BiometricCaptureFragment : Fragment(R.layout.fragment_biometric_capture),
     // Callback for handling successful capture session results
     override fun onSuccess(result: MBCaptureSessionResult?) {
         requireActivity().runOnUiThread {
-            progress = SpotsDialog.Builder().setContext(requireContext()).setMessage("Verifying...").build()
+            progress = SpotsDialog.Builder().setContext(requireContext()).setMessage("Verifying...")
+                .build()
             progress.show()
         }
         result?.let {

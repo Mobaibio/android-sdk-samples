@@ -1,4 +1,4 @@
-package com.example.biometricsdkexample
+package com.example.biometricsdkexample.biometric
 
 import android.content.Context
 import android.graphics.Canvas

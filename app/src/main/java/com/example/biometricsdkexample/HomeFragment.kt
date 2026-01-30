@@ -22,7 +22,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.btnStart.setOnClickListener {
+        binding.btnStartNfc.setOnClickListener {
             val action = HomeFragmentDirections.actionHomeFragmentToDocumentReadingFragment2()
             safeNavigation(action)
         }
@@ -30,7 +30,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.btnSettings.setOnClickListener {
             SettingsSheet().show(parentFragmentManager, "")
         }
-        binding.btnStartNfc.setOnClickListener {
+        binding.btnStart.setOnClickListener {
             val action = HomeFragmentDirections.actionHomeFragmentToBiometricCaptureFragment()
             safeNavigation(action)
         }
